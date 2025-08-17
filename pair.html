@@ -1,35 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="si">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ROBIN PAIR CODE</title>
+  <title>HASA and NERO</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
   <style>
     body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #141414, #a20000);
+      color: #fff;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      margin: 0;
-      background: linear-gradient(135deg, #141414, #a20000);
-      font-family: 'Arial', sans-serif;
-      color: #fff;
     }
 
-    .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .box {
-      width: 320px;
-      padding: 20px;
-      background-color: rgba(0, 0, 0, 0.6);
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+    .wrapper {
       text-align: center;
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.7);
+      width: 90%;
+      max-width: 400px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      color: #00ffcc;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      font-weight: normal;
     }
 
     .input-container {
@@ -38,9 +46,7 @@
       border-radius: 1rem;
       padding: 0.3rem;
       gap: 0.3rem;
-      max-width: 300px;
-      width: 100%;
-      margin-top: 10px;
+      margin-bottom: 15px;
     }
 
     .input-container input {
@@ -53,16 +59,11 @@
       color: #ecf0f1;
     }
 
-    .input-container input:focus {
-      outline: none;
-      box-shadow: inset 13px 13px 10px #075e54, inset -13px -13px 10px #2c3e50;
-    }
-
     .input-container button {
       padding: 1rem;
       background: #25d366;
       font-weight: 900;
-      letter-spacing: 0.3rem;
+      letter-spacing: 0.1rem;
       text-transform: uppercase;
       color: white;
       border: none;
@@ -76,8 +77,8 @@
 
     #loading-spinner {
       display: none;
-      color: white;
       margin-top: 10px;
+      color: white;
     }
 
     .fa-spinner {
@@ -89,26 +90,13 @@
       100% { transform: rotate(360deg); }
     }
 
-    @media (max-width: 500px) {
-      .input-container {
-        flex-direction: column;
-      }
-
-      .input-container input,
-      .input-container button {
-        border-radius: 0.8rem;
-        width: 100%;
-      }
-    }
-
-    .message {
-      margin-top: 10px;
+    #pair {
+      margin-top: 15px;
       font-weight: bold;
     }
 
-    .copy-code {
+    #copy {
       color: #00ffff;
-      font-weight: bold;
       cursor: pointer;
     }
 
@@ -126,36 +114,29 @@
       z-index: 999;
     }
 
-    #lang-switch {
-      margin-top: 10px;
-      background: #fff;
-      color: #000;
-      border-radius: 5px;
-      padding: 5px;
-      font-weight: bold;
+    .footer {
+      margin-top: 20px;
+      font-size: 0.9rem;
+      color: #ccc;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="box">
-      <i class="fa fa-user"></i>
-      <h3 id="heading">📲 Link Robin with your number</h3>
-      <p id="subtext">🔢 Enter your number with country code (e.g., +94704xxxxxx)</p>
-      <div class="input-container">
-        <input type="text" id="number" placeholder="+94704xxxxxx" />
-        <button id="submit">Submit</button>
-      </div>
-      <select id="lang-switch">
-        <option value="en">English</option>
-        <option value="si">සිංහල</option>
-      </select>
-      <div id="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>
-      <div id="pair" class="message"></div>
-    </div>
-  </div>
+  <div class="wrapper">
+    <h1>🤖 HASA and NERO</h1>
+    <h2>සිංහල bot එකක් – Pair කරන්න ඔබේ දුරකථන අංකය</h2>
 
-  <div id="toast">✔️ CODE copied!</div>
+    <div class="input-container">
+      <input type="text" id="number" placeholder="+94704xxxxxx" />
+      <button id="submit">Pair</button>
+    </div>
+
+    <div id="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>
+    <div id="pair"></div>
+    <div id="toast">✔️ CODE copied!</div>
+
+    <div class="footer">© 2025 HASA and NERO | Powered by Sinhala UX + Plugin Logic</div>
+  </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.0.0-alpha.1/axios.min.js"></script>
   <script>
@@ -164,30 +145,6 @@
     const numberInput = document.getElementById("number");
     const spinner = document.getElementById("loading-spinner");
     const toast = document.getElementById("toast");
-
-    const translations = {
-      si: {
-        heading: "📲 ඔබේ දුරකථන අංකය සමඟ රොබින් සම්බන්ධ කරන්න",
-        subtext: "🔢 රටේ කේතය සමඟ ඔබේ අංකය ඇතුළත් කරන්න (උදා: +94704xxxxxx)",
-        button: "යවන්න",
-        invalid: "❗ අංකය වැරදියි. කරුණාකර රටේ කේතය සමඟ ඇතුළත් කරන්න.",
-        copied: "✔️ කේතය පිටපත් විය!",
-      },
-      en: {
-        heading: "📲 Link Robin with your number",
-        subtext: "🔢 Enter your number with country code (e.g., +94704xxxxxx)",
-        button: "Submit",
-        invalid: "❗ Invalid number. Please enter with country code.",
-        copied: "✔️ CODE copied!",
-      }
-    };
-
-    document.getElementById("lang-switch").addEventListener("change", (e) => {
-      const lang = e.target.value;
-      document.getElementById("heading").innerText = translations[lang].heading;
-      document.getElementById("subtext").innerText = translations[lang].subtext;
-      document.getElementById("submit").innerText = translations[lang].button;
-    });
 
     function showToast(message) {
       toast.innerText = message;
@@ -201,16 +158,14 @@
       const codeElement = document.getElementById("copy");
       const codeText = codeElement.innerText.replace("CODE: ", "");
       await navigator.clipboard.writeText(codeText);
-      showToast(translations[document.getElementById("lang-switch").value].copied);
+      showToast("✔️ CODE copied!");
     }
 
     submit.addEventListener("click", async (e) => {
       e.preventDefault();
       const raw = numberInput.value.replace(/[^0-9]/g, "");
-      const lang = document.getElementById("lang-switch").value;
-
       if (!raw || raw.length < 11) {
-        pair.innerHTML = `<span style="color:#ffcc00;">${translations[lang].invalid}</span>`;
+        pair.innerHTML = `<span style="color:#ffcc00;">❗ අංකය වැරදියි. රටේ කේතය සමඟ ඇතුළත් කරන්න.</span>`;
         return;
       }
 
@@ -223,10 +178,10 @@
 
       try {
         const { data } = await axios(`/code?number=${raw}`);
-        const code = data.code || "❗ Service Unavailable";
-        pair.innerHTML = `<span id="copy" class="copy-code" onclick="copyCode()">CODE: ${code}</span>`;
+        const code = data.code || "❗ සේවාව ලබා ගත නොහැක";
+        pair.innerHTML = `<span id="copy" onclick="copyCode()">CODE: ${code}</span>`;
       } catch (err) {
-        pair.innerHTML = `<span style="color:red;">❗ Error fetching code. Try again later.</span>`;
+        pair.innerHTML = `<span style="color:red;">❗ දෝෂයක් ඇතිවිය. නැවත උත්සාහ කරන්න.</span>`;
       } finally {
         spinner.style.display = "none";
       }
