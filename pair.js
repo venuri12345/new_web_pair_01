@@ -9,7 +9,7 @@ const {
   Browsers,
   jidNormalizedUser,
 } = require("@whiskeysockets/baileys");
-const { upload } = require("./mega"); // your MEGA uploader
+const { upload } = require("./mega"); // MEGA uploader
 
 function removeFile(path) {
   if (fs.existsSync(path)) {
@@ -30,10 +30,18 @@ function generateId(length = 6, digits = 4) {
 async function paircodeHandler(req, res) {
   const rawNum = req.query.number;
   if (!rawNum || rawNum.length < 10) {
-    return res.send({ code: "Invalid number" });
+    return res.status(400).send({ code: "Invalid number" });
   }
 
   const number = rawNum.replace(/[^0-9]/g, "");
+
+  let sent = false;
+  const safeSend = (data) => {
+    if (!sent && !res.headersSent) {
+      res.send(data);
+      sent = true;
+    }
+  };
 
   try {
     const { state, saveCreds } = await useMultiFileAuthState("./session");
@@ -60,6 +68,10 @@ async function paircodeHandler(req, res) {
           const userJid = jidNormalizedUser(sock.user.id);
           const sessionPath = "./session/creds.json";
 
+          if (!fs.existsSync(sessionPath)) {
+            throw new Error("Session file missing");
+          }
+
           const megaUrl = await upload(
             fs.createReadStream(sessionPath),
             `${generateId()}.json`
@@ -67,7 +79,6 @@ async function paircodeHandler(req, res) {
 
           const sessionCode = megaUrl.replace("https://mega.nz/file/", "");
 
-          // 🔥 Branded image
           await sock.sendMessage(userJid, {
             image: {
               url: "https://raw.githubusercontent.com/Dark-Robin/Bot-Helper/refs/heads/main/autoimage/Bot%20robin%20WP.jpg",
@@ -75,17 +86,14 @@ async function paircodeHandler(req, res) {
             caption: "𝑩𝑶𝑻 𝑪𝑶𝑵𝑵𝑬𝑪𝑻𝑬𝑫 ✅\n⚡ Powered by - HASA and NERO ⚡",
           });
 
-          // 🔐 Session code
           await sock.sendMessage(userJid, {
             text: `🔐 Session Code:\n${sessionCode}`,
           });
 
-          // 🛡️ Warning
           await sock.sendMessage(userJid, {
             text: "🛑 *Do not share this code with anyone!* 🛑",
           });
 
-          // ✅ Final branded message
           await sock.sendMessage(userJid, {
             text: `
 𝑩𝑶𝑻 𝑪𝑶𝑵𝑵𝑬𝑪𝑻𝑬𝑫 ✅
@@ -117,16 +125,12 @@ async function paircodeHandler(req, res) {
     });
 
     const code = await sock.requestPairingCode(number);
-    if (!res.headersSent) {
-      res.send({ code });
-    }
+    safeSend({ code });
   } catch (err) {
     console.error("Pairing failed:", err);
     exec("pm2 restart Robin");
     removeFile("./session");
-    if (!res.headersSent) {
-      res.send({ code: "Service Unavailable" });
-    }
+    safeSend({ code: "Service Unavailable" });
   }
 }
 
