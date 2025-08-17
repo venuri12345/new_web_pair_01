@@ -6,19 +6,33 @@
   <title>HASA and NERO</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
   <style>
-    body {
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      height: 100%;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #141414, #a20000);
-      color: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* 🔥 Video background */
+    #bg-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: cover;
+      z-index: -1;
+      filter: brightness(0.3);
     }
 
     .wrapper {
+      position: relative;
+      z-index: 1;
       text-align: center;
       background-color: rgba(0, 0, 0, 0.6);
       padding: 30px;
@@ -26,6 +40,10 @@
       box-shadow: 0 0 20px rgba(0,0,0,0.7);
       width: 90%;
       max-width: 400px;
+      margin: auto;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #fff;
     }
 
     h1 {
@@ -122,6 +140,12 @@
   </style>
 </head>
 <body>
+  <!-- 🎥 Background Video -->
+  <video autoplay muted loop id="bg-video">
+    <source src="https://cdn.pixabay.com/video/2024/05/02/210424_large.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+
   <div class="wrapper">
     <h1>🤖 HASA and NERO</h1>
     <h2>සිංහල bot එකක් – Pair කරන්න ඔබේ දුරකථන අංකය</h2>
