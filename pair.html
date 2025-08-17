@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PAIR CODE</title>
+  <title>ROBIN PAIR CODE</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
   <style>
     body {
@@ -12,7 +12,7 @@
       align-items: center;
       height: 100vh;
       margin: 0;
-      background-color: #141414;
+      background: linear-gradient(135deg, #141414, #a20000);
       font-family: 'Arial', sans-serif;
       color: #fff;
     }
@@ -24,9 +24,9 @@
     }
 
     .box {
-      width: 300px;
+      width: 320px;
       padding: 20px;
-      background-color: #a20000;
+      background-color: rgba(0, 0, 0, 0.6);
       border-radius: 10px;
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
       text-align: center;
@@ -40,6 +40,7 @@
       gap: 0.3rem;
       max-width: 300px;
       width: 100%;
+      margin-top: 10px;
     }
 
     .input-container input {
@@ -110,22 +111,51 @@
       font-weight: bold;
       cursor: pointer;
     }
+
+    #toast {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #25d366;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: bold;
+      z-index: 999;
+    }
+
+    #lang-switch {
+      margin-top: 10px;
+      background: #fff;
+      color: #000;
+      border-radius: 5px;
+      padding: 5px;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="box">
       <i class="fa fa-user"></i>
-      <h3>📲 Link Robin with your number</h3>
-      <p>🔢 Enter your number with country code (e.g., +94704xxxxxx)</p>
+      <h3 id="heading">📲 Link Robin with your number</h3>
+      <p id="subtext">🔢 Enter your number with country code (e.g., +94704xxxxxx)</p>
       <div class="input-container">
         <input type="text" id="number" placeholder="+94704xxxxxx" />
         <button id="submit">Submit</button>
       </div>
+      <select id="lang-switch">
+        <option value="en">English</option>
+        <option value="si">සිංහල</option>
+      </select>
       <div id="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>
       <div id="pair" class="message"></div>
     </div>
   </div>
+
+  <div id="toast">✔️ CODE copied!</div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.0.0-alpha.1/axios.min.js"></script>
   <script>
@@ -133,22 +163,54 @@
     const submit = document.getElementById("submit");
     const numberInput = document.getElementById("number");
     const spinner = document.getElementById("loading-spinner");
+    const toast = document.getElementById("toast");
+
+    const translations = {
+      si: {
+        heading: "📲 ඔබේ දුරකථන අංකය සමඟ රොබින් සම්බන්ධ කරන්න",
+        subtext: "🔢 රටේ කේතය සමඟ ඔබේ අංකය ඇතුළත් කරන්න (උදා: +94704xxxxxx)",
+        button: "යවන්න",
+        invalid: "❗ අංකය වැරදියි. කරුණාකර රටේ කේතය සමඟ ඇතුළත් කරන්න.",
+        copied: "✔️ කේතය පිටපත් විය!",
+      },
+      en: {
+        heading: "📲 Link Robin with your number",
+        subtext: "🔢 Enter your number with country code (e.g., +94704xxxxxx)",
+        button: "Submit",
+        invalid: "❗ Invalid number. Please enter with country code.",
+        copied: "✔️ CODE copied!",
+      }
+    };
+
+    document.getElementById("lang-switch").addEventListener("change", (e) => {
+      const lang = e.target.value;
+      document.getElementById("heading").innerText = translations[lang].heading;
+      document.getElementById("subtext").innerText = translations[lang].subtext;
+      document.getElementById("submit").innerText = translations[lang].button;
+    });
+
+    function showToast(message) {
+      toast.innerText = message;
+      toast.style.display = "block";
+      setTimeout(() => {
+        toast.style.display = "none";
+      }, 2000);
+    }
 
     async function copyCode() {
       const codeElement = document.getElementById("copy");
       const codeText = codeElement.innerText.replace("CODE: ", "");
       await navigator.clipboard.writeText(codeText);
-      codeElement.innerText = "✔️ COPIED";
-      setTimeout(() => {
-        codeElement.innerText = "CODE: " + codeText;
-      }, 1000);
+      showToast(translations[document.getElementById("lang-switch").value].copied);
     }
 
     submit.addEventListener("click", async (e) => {
       e.preventDefault();
       const raw = numberInput.value.replace(/[^0-9]/g, "");
+      const lang = document.getElementById("lang-switch").value;
+
       if (!raw || raw.length < 11) {
-        pair.innerHTML = `<span style="color:#ffcc00;">❗ Invalid number. Please enter with country code.</span>`;
+        pair.innerHTML = `<span style="color:#ffcc00;">${translations[lang].invalid}</span>`;
         return;
       }
 
